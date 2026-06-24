@@ -7,12 +7,19 @@ import { isCustomError, isError } from "./utils/commonTypeGuards";
 const app = express();
 applyMiddleware(app);
 
-app.get("/api/v1/health", (_req: Request, res: Response) => {
-  res.status(200).json({
-    code: 200,
-    health: "OK!",
-  });
-});
+app.get(
+  "/api/v1/health",
+  (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.status(200).json({
+        code: 200,
+        health: "OK!",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 app.use(
   (
