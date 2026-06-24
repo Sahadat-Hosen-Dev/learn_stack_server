@@ -1,0 +1,2311 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: "LearnStack Application API DOCUMENTATION"
+  description: "This is a LearnStack Web Application API DOCUMENTATION"
+  contact:
+    name: Sahadat Hosen
+    url: https://SahadatHosen.com
+    email: sahadathosen.dev@gmail.com
+servers:
+  - description: Dev
+    url: "http://localhost:4000/api/v1"
+tags:
+  - name: Auth
+    description: Authentication Endpoints (public)
+  - name: Category
+    description: Category Endpoints (public + private)
+  - name: Resource
+    description: Resource Endpoints (public + private)
+  - name: Comment
+    description: Comments Endpoints (public + private)
+  - name: Reaction
+    description: Reaction Endpoints (public + private)
+  - name: User
+    description: User Endpoints (private)
+paths:
+  "/api/v1/auth/register":
+    post:
+      description: create a new account
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: sahadat hosen
+                credential:
+                  type: string
+                  format: email
+                  example: hossantopu@gmail.com
+                password:
+                  type: string
+                  format: password
+                  example: pass1111
+              required: [username, credential, password]
+      responses:
+        "201":
+          description: Registration received. Please check your credentials for the verification OTP
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  message:
+                    type: string
+                    example: Registration received. Please check your credentials for the verification OTP
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/register"
+                      login:
+                        type: string
+                        example: "/api/v1/auth/verifyRegisterOtp"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+
+  "/api/v1/auth/verifyRegisterOtp":
+    post:
+      description: Verify Register OTP
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                credential:
+                  type: string
+                  format: email
+                  example: hossantopu@gmail.com
+                otp:
+                  type: string
+                  example: 34343
+              required: [credential, otp]
+      responses:
+        "200":
+          description: Email verified successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Email verified successfully. You are now login.
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/verifyRegisterOtp"
+                      login:
+                        type: string
+                        example: "/api/v1/auth/login"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  "/api/v1/auth/login":
+    post:
+      description: Log in to existing account
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                credential:
+                  type: string
+                  format: email
+                  example: hossantopu@gmail.com
+                password:
+                  type: string
+                  format: password
+                  example: pass1111
+              required: [credential, password]
+      responses:
+        "200":
+          description: Login Successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Login successfully.
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/login"
+                      register:
+                        type: string
+                        example: "/api/v1/auth/register"
+                      forgetPassword:
+                        type: string
+                        example: "/api/v1/auth/forgetPassword"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+
+  "/api/v1/auth/forgetPassword":
+    post:
+      description: Forget Password with OTP.
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                credential:
+                  type: string
+                  example: hossantopu@gmail.com
+      responses:
+        "200":
+          description: OTP sent to this credential.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: object
+                    example: OTP send to this credential.
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/forgetPassword"
+                      resendResetOtp:
+                        type: string
+                        example: "/api/v1/auth/resendResetOtp"
+                      verifyResetOtp:
+                        type: string
+                        example: "/api/v1/auth/verifyResetOtp"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/auth/resendOtp":
+    post:
+      description: Resend forget OTP.
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                credential:
+                  type: string
+                  example: hossantopu@gmail.com
+      responses:
+        "200":
+          description: New Otp send this credential.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: object
+                    example: New Otp send this credential.
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/resendOtp"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/auth/verifyResetOtp":
+    post:
+      description: Verify Reset OTP.
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                credential:
+                  type: string
+                  example: hossantopu@gmail.com
+                otp:
+                  type: string
+                  example: 86548
+      responses:
+        "200":
+          description: OTP verified. Now reset your password.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: object
+                    example: OTP verified. Now reset your password.
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/verifyResetOtp"
+                      resetPassword:
+                        type: string
+                        example: "/api/v1/auth/resetPassword"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/auth/resetPassword":
+    post:
+      description: Reset Password.
+      tags: [Auth]
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                credential:
+                  type: string
+                  example: hossantopu@gmail.com
+                newPassword:
+                  type: string
+                  example: 45474
+      responses:
+        "200":
+          description: Password reset successfully. Please login.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: object
+                    example: Password reset successfully. Please login.
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "/api/v1/auth/resetPassword"
+                      login:
+                        type: string
+                        example: "/api/v1/auth/login"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/resources":
+    post:
+      operationId: create resources
+      security:
+        - bearerAuth: []
+      tags: [Resource]
+      description: Create a new Resource
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                  example: "64fa38cce9a2d7f123456789"
+                title:
+                  type: string
+                  example: "TypeScript"
+                description:
+                  type: string
+                  example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                content:
+                  type: string
+                  example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                accessType:
+                  type: string
+                  enum:
+                    - free
+                    - basic
+                    - premium
+                status:
+                  type: string
+                  enum:
+                    - published
+                    - draft
+                image:
+                  type: string
+                  format: binary
+              required:
+                - categoryId
+                - title
+                - description
+                - content
+                - image
+
+      responses:
+        "201":
+          description: Resource created successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  message:
+                    type: string
+                    example: Resource created successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "64fa38cce9a2d7f123456789"
+                          categoryId:
+                            type: string
+                            example: "64fa38cce9a2d7f123456780"
+                          title:
+                            type: string
+                            example: "TypeScript"
+                          description:
+                            type: string
+                            example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                          content:
+                            type: string
+                            example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                          accessType:
+                            type: string
+                            example: free
+                          status:
+                            type: string
+                            example: draft
+                          images:
+                            type: string
+                            example: https://cdn.com/resource/typescript.jpg
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/resources/64fa38cce9a2d7f123456789"
+                      category:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories/64fa38cce9a2d7f12345674453"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Resource]
+      description: Retrive all published resource.
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/sortTypeParam"
+        - $ref: "#/components/parameters/sortByParam"
+        - $ref: "#/components/parameters/categoryIdParam"
+        - $ref: "#/components/parameters/searchParam"
+        - $ref: "#/components/parameters/statusParam"
+        - $ref: "#/components/parameters/accessTypeParam"
+      responses:
+        "200":
+          description: Return a list of resources.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "64fa38cce9a2d7f123456789"
+                            category:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  example: programming
+                                description:
+                                  type: string
+                                  example: Learn programming skills.
+                            title:
+                              type: string
+                              example: "TypeScript"
+                            description:
+                              type: string
+                              example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                            content:
+                              type: string
+                              example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                            accessType:
+                              type: string
+                              example: free
+                            status:
+                              type: string
+                              example: draft
+                            images:
+                              type: string
+                              example: https://cdn.com/resource/typescript.jpg
+                              link:
+                                type: object
+                                properties:
+                                  self:
+                                    type: string
+                                    format: url
+                                    example: "/api/v1//products/64fa38cce9a2d7f123456789"
+                          required:
+                            - categoryId
+                            - name
+                            - pricing
+                            - images
+                        - $ref: "#/components/schemas/Timestamp"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/resources?page=2&limit=10"
+                      next:
+                        type: string
+                        format: url
+                        example: "/api/v1/resources?page=3&limit=10"
+                      prev:
+                        type: string
+                        format: url
+                        example: "/api/v1/resources?page=1&limit=10"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/resources/{id}":
+    patch:
+      security:
+        - bearerAuth: []
+      tags: [Resource]
+      description: Partially update a Resource
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                  example: "64fa38cce9a2d7f123456789"
+                title:
+                  type: string
+                  example: "TypeScript"
+                description:
+                  type: string
+                  example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                content:
+                  type: string
+                  example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                accessType:
+                  type: string
+                  enum:
+                    - free
+                    - basic
+                    - premium
+                status:
+                  type: string
+                  enum:
+                    - published
+                    - draft
+                image:
+                  type: string
+                  format: binary
+
+      responses:
+        "200":
+          description: Resource updated successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Resource updated successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "64fa38cce9a2d7f123456789"
+                          categoryId:
+                            type: string
+                            example: "64fa38cce9a2d7f123456780"
+                          title:
+                            type: string
+                            example: "TypeScript"
+                          description:
+                            type: string
+                            example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                          content:
+                            type: string
+                            example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                          accessType:
+                            type: string
+                            example: free
+                          status:
+                            type: string
+                            example: draft
+                          images:
+                            type: string
+                            example: https://cdn.com/resource/typescript.jpg
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/resources/64fa38cce9a2d7f123456789"
+                      category:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories/64fa38cce9a2d7f12345676554"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - bearerAuth: []
+      tags: [Resource]
+      description: Delete a resource by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "204":
+          description: "Resource deleted successfully"
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 204
+                  message:
+                    type: string
+                    example: Resource deleted successfully.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Resource]
+      description: Retrive  published resource by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "64fa38cce9a2d7f123456789"
+                          category:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: programming
+                              description:
+                                type: string
+                                example: Learn programming skills.
+                          title:
+                            type: string
+                            example: "TypeScript"
+                          description:
+                            type: string
+                            example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                          content:
+                            type: string
+                            example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                          accessType:
+                            type: string
+                            example: free
+                          status:
+                            type: string
+                            example: draft
+                          images:
+                            type: string
+                            example: https://cdn.com/resource/typescript.jpg
+                      - $ref: "#/components/schemas/Timestamp"
+                  link:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                        example: "/api/v1/products/64fa38cce9a2d7f123456789"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+
+  "/api/v1/categories":
+    post:
+      security:
+        - bearerAuth: []
+      tags: [Category]
+      description: Create categories.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: programming
+                description:
+                  type: string
+                  example: Learn programming.
+              required:
+                - name
+                - description
+      responses:
+        "201":
+          description: Create category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Category created successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "650f1b2a1c23d7f001234567"
+                          name:
+                            type: string
+                            example: programming
+                          description:
+                            type: string
+                            example: learn programming.
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                        example: "/api/v1/categories/64fa38cce9a2d7f123456789"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Category]
+      description: Retrive all published Category.
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/sortTypeParam"
+        - $ref: "#/components/parameters/sortByParam"
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "650f1b2a1c23d7f001234567"
+                            name:
+                              type: string
+                              example: programming
+                            description:
+                              type: string
+                              example: learn programming.
+                            link:
+                              type: object
+                              properties:
+                                self:
+                                  type: string
+                                  example: api/v1/categories/650f1b2a1c23d7f001234567
+                        - $ref: "#/components/schemas/Timestamp"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=2&limit=10"
+                      next:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=3&limit=10"
+                      prev:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=1&limit=10"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/categories/{id}":
+    patch:
+      security:
+        - bearerAuth: []
+      tags: [Category]
+      description: Partially update a category.
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: science
+                description:
+                  type: string
+                  example: learn and take some knowledge.
+      responses:
+        "200":
+          description: Category updated successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Category updated successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 64fa38cce9a2d7f123456789
+                          name:
+                            type: string
+                            example: science
+                          description:
+                            type: string
+                            example: learn and take some knowledge.
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /api/v1/categories/64fa38cce9a2d7f123456789
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      security:
+        - bearerAuth: []
+      tags: [Category]
+      description: Delete a Category by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "204":
+          description: "Category deleted successfully"
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 204
+                  message:
+                    type: string
+                    example: category deleted successfully.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  "/api/v1/comments":
+    post:
+      security:
+        - bearerAuth: []
+      tags: [Comment]
+      description: Create comment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: good resource
+                resourceId:
+                  type: string
+                  example: 6612c9b8b3f4c2a9d8e12345
+              required:
+                - content
+                - resourceId
+      responses:
+        "201":
+          description: Create comment
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Comment created successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "650f1b2a1c23d7f001234567"
+                          content:
+                            type: string
+                            example: good
+                          userId:
+                            type: string
+                            example: 650f1b2a1c23d7f001234567
+                          resourceId:
+                            type: string
+                            example: 650f1b2a1c23d7f001236765
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                        example: /api/v1/comments/64fa38cce9a2d7f123456789
+                      author:
+                        type: string
+                        format: uri
+                        example: /api/v1/users/64fa38cce9a2d7f123456789
+                      resource:
+                        type: string
+                        format: uri
+                        example: /api/v1/resources/64fa38cce9a2d7f123458322
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Comment]
+      description: Retrive all published comments.
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/sortTypeParam"
+        - $ref: "#/components/parameters/sortByParam"
+        - $ref: "#/components/parameters/userIdParam"
+        - $ref: "#/components/parameters/resourceIdParam"
+      responses:
+        "200":
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "650f1b2a1c23d7f001234567"
+                            content:
+                              type: string
+                              example: good
+                            author:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                  example: 650f1b2a1c23d7f001234567
+                                username:
+                                  type: string
+                                  example: sahadat hossan
+                                profile:
+                                  type: object
+                                  properties:
+                                    _id:
+                                      type: string
+                                      example: 650f1b2a1c23d7f001234567
+                                    avator:
+                                      type: string
+                                      example: https/avator.png
+                                    bio:
+                                      type: string
+                                      example: full stack web developer.
+                                    designation:
+                                      type: string
+                                      example: I have completed cse degree.
+                            resourceId:
+                              type: string
+                              example: 650f1b2a1c23d7f001234567
+                            link:
+                              type: object
+                              properties:
+                                self:
+                                  type: string
+                                  example: /api/v1/comments/650f1b2a1c23d7f001234567
+                                author:
+                                  type: string
+                                  example: /api/v1/users/650f1b2a1c23d7f001234567
+                                resource:
+                                  type: string
+                                  example: /api/v1/resources/650f1b2a1c23d7f00123442
+                        - $ref: "#/components/schemas/Timestamp"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/comments?page=2&limit=10"
+                      next:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=3&limit=10"
+                      prev:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=1&limit=10"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/comments/{id}":
+    patch:
+      security:
+        - bearerAuth: []
+      tags: [Comment]
+      description: Partially update a comment.
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: Really good.
+      responses:
+        "200":
+          description: Comment updated successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Comment updated successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 64fa38cce9a2d7f123456789
+                          content:
+                            type: string
+                            example: Really good.
+                          userId:
+                            type: string
+                            example: 6612c9b8b3f4c2a9d8e11823
+                          resourceId:
+                            type: string
+                            example: 6612c9b8b3f4c2a9d8e12345
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /api/v1/comments/64fa38cce9a2d7f123456789
+                      author:
+                        type: string
+                        example: /api/v1/users/64fa38cce9a2d7f123456789
+                      resource:
+                        type: string
+                        example: /api/v1/resources/64fa38cce9a2d7f123456789
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - bearerAuth: []
+      tags: [Comment]
+      description: Delete a comment by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "204":
+          description: "Comment deleted successfully"
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 204
+                  message:
+                    type: string
+                    example: Comment deleted successfully.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Comment]
+      description: Retrive  published comment by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "64fa38cce9a2d7f123456789"
+                          content:
+                            type: string
+                            example: Really good.
+                          author:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 64fa38cce9a2d7f123456789
+                              username:
+                                type: string
+                                example: topu
+                              profile:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    example: 64fa38cce9a2d7f123456789
+                                  avator:
+                                    type: string
+                                    example: https/topu.png
+                                  bio:
+                                    type: string
+                                    example: I am topu
+                                  designation:
+                                    type: string
+                                    example: completed cse degree.
+                          resource:
+                            type: object
+                            properties:
+                              category:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    example: 64fa38cce9a2d7f123456789
+                                  name:
+                                    type: string
+                                    example: programming
+                                  description:
+                                    type: string
+                                    example: learn an grow yourself.
+                              title:
+                                type: string
+                                example: "TypeScript"
+                              description:
+                                type: string
+                                example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                              content:
+                                type: string
+                                example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                              accessType:
+                                type: string
+                                example: free
+                              status:
+                                type: string
+                                example: draft
+                              images:
+                                type: string
+                                example: https://cdn.com/resource/typescript.jpg
+                              createdAt:
+                                type: string
+                                example: 2026-04-07T19:38:21.201Z
+                              updatedAt:
+                                type: string
+                                example: 2026-04-07T19:38:21.201Z
+                              links:
+                                type: object
+                                properties:
+                                  self:
+                                    type: string
+                                    example: /api/v1/resources/64fa38cce9a2d7f123456789
+                      - $ref: "#/components/schemas/Timestamp"
+                  link:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                        example: "/api/v1/comments/64fa38cce9a2d7f123456789"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/reactions":
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Reaction]
+      description: Retrive all published reations.
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/sortTypeParam"
+        - $ref: "#/components/parameters/sortByParam"
+        - $ref: "#/components/parameters/userIdParam"
+        - $ref: "#/components/parameters/resourceIdParam"
+      responses:
+        "200":
+          description: List of reactions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "650f1b2a1c23d7f001234567"
+                            status:
+                              type: string
+                              example: like
+                            author:
+                              type: object
+                              properties:
+                                _id:
+                                  type: string
+                                  example: 650f1b2a1c23d7f001234567
+                                username:
+                                  type: string
+                                  example: sahadat hossan
+                                profile:
+                                  type: object
+                                  properties:
+                                    _id:
+                                      type: string
+                                      example: 650f1b2a1c23d7f001234567
+                                    avator:
+                                      type: string
+                                      example: https/avator.png
+                                    bio:
+                                      type: string
+                                      example: full stack web developer.
+                                    designation:
+                                      type: string
+                                      example: I have completed cse degree.
+                            resourceId:
+                              type: string
+                              example: 650f1b2a1c23d7f001234567
+                            link:
+                              type: object
+                              properties:
+                                self:
+                                  type: string
+                                  example: /api/v1/reactions/650f1b2a1c23d7f001234567
+                                author:
+                                  type: string
+                                  example: /api/v1/users/650f1b2a1c23d7f001234567
+                                resource:
+                                  type: string
+                                  example: /api/v1/resources/650f1b2a1c23d7f00123442
+                        - $ref: "#/components/schemas/Timestamp"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/comments?page=2&limit=10"
+                      next:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=3&limit=10"
+                      prev:
+                        type: string
+                        format: url
+                        example: "/api/v1/categories?page=1&limit=10"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/reactions/{id}":
+    put:
+      security:
+        - bearerAuth: []
+      tags: [Reaction]
+      description: Partially update a reaction.
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - none
+                    - like
+                    - dislike
+                  example: like
+      responses:
+        "200":
+          description: Reaction updated successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: Reaction updated successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 64fa38cce9a2d7f123456789
+                          status:
+                            type: string
+                            example: like
+                          userId:
+                            type: string
+                            example: 6612c9b8b3f4c2a9d8e11823
+                          resourceId:
+                            type: string
+                            example: 6612c9b8b3f4c2a9d8e12345
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /api/v1/reactions/64fa38cce9a2d7f123456789
+                      author:
+                        type: string
+                        example: /api/v1/users/64fa38cce9a2d7f123456789
+                      resource:
+                        type: string
+                        example: /api/v1/resources/64fa38cce9a2d7f123456789
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      security:
+        - bearerAuth: []
+      tags: [Reaction]
+      description: Delete a reaction by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "204":
+          description: "Reaction deleted successfully"
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 204
+                  message:
+                    type: string
+                    example: Reaction deleted successfully.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Reaction]
+      description: Retrive  published reaction by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "64fa38cce9a2d7f123456789"
+                          status:
+                            type: string
+                            example: like
+                          author:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 64fa38cce9a2d7f123456789
+                              username:
+                                type: string
+                                example: topu
+                              profile:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    example: 64fa38cce9a2d7f123456789
+                                  avator:
+                                    type: string
+                                    example: https/topu.png
+                                  bio:
+                                    type: string
+                                    example: I am topu
+                                  designation:
+                                    type: string
+                                    example: completed cse degree.
+                          resource:
+                            type: object
+                            properties:
+                              category:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    example: 64fa38cce9a2d7f123456789
+                                  name:
+                                    type: string
+                                    example: programming
+                                  description:
+                                    type: string
+                                    example: learn an grow yourself.
+                              title:
+                                type: string
+                                example: "TypeScript"
+                              description:
+                                type: string
+                                example: TypeScript is a strongly typed programming language that builds on JavaScript.
+                              content:
+                                type: string
+                                example: TypeScript stands in an unusual relationship to JavaScript. TypeScript offers all of JavaScripts features, and an additional layer on top of TypeScripts type system.
+                              accessType:
+                                type: string
+                                example: free
+                              status:
+                                type: string
+                                example: draft
+                              images:
+                                type: string
+                                example: https://cdn.com/resource/typescript.jpg
+                              createdAt:
+                                type: string
+                                example: 2026-04-07T19:38:21.201Z
+                              updatedAt:
+                                type: string
+                                example: 2026-04-07T19:38:21.201Z
+                              links:
+                                type: object
+                                properties:
+                                  self:
+                                    type: string
+                                    example: /api/v1/resources/64fa38cce9a2d7f123456789
+                      - $ref: "#/components/schemas/Timestamp"
+                  link:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                        example: "/api/v1/reactions/64fa38cce9a2d7f123456789"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/reactions/summary":
+    get:
+      security:
+        - bearerAuth: []
+      tags: [Reaction]
+      description: Retrive all published reaction summary.
+      responses:
+        "200":
+          description: Overall reaction summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      likes:
+                        type: number
+                        example: 34
+                      dislikes:
+                        type: number
+                        example: 33
+                      myReaction:
+                        type: string
+                        example: like
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/users?page=2&limit=10"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+
+  "/api/v1/users":
+    get:
+      security:
+        - bearerAuth: []
+      tags: [User]
+      description: Retrive all published Users
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/sortTypeParam"
+        - $ref: "#/components/parameters/sortByParam"
+        - $ref: "#/components/parameters/userStatusParam"
+        - $ref: "#/components/parameters/searchParam"
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                        - type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "650f1b2a1c23d7f001234567"
+                            username:
+                              type: string
+                              example: "johndoe"
+                            email:
+                              type: string
+                              format: email
+                              example: "johndoe@example.com"
+                            role:
+                              type: string
+                              enum: [user, admin]
+                              example: "user"
+                            profile:
+                              type: object
+                              properties:
+                                avator:
+                                  type: string
+                                  example: https/topu.png
+                                bio:
+                                  type: string
+                                  example: I am a full stack web developer.
+                                designation:
+                                  type: string
+                                  example: Completed cse degree.
+                            link:
+                              type: object
+                              properties:
+                                self:
+                                  type: string
+                                  format: uri
+                                  example: "api/v1/users/650f1b2a1c23d7f001234567"
+                        - $ref: "#/components/schemas/Timestamp"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: url
+                        example: "/api/v1/users?page=2&limit=10"
+                      next:
+                        type: string
+                        format: url
+                        example: "/api/v1/users?page=3&limit=10"
+                      prev:
+                        type: string
+                        format: url
+                        example: "/api/v1/users?page=1&limit=10"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/users/{id}":
+    delete:
+      security:
+        - bearerAuth: []
+      tags: [User]
+      description: Delete a user
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "204":
+          description: "shipping_address deleted successfully"
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 204
+                  message:
+                    type: string
+                    example: User deleted successfully.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+  "/api/v1/users/{id}/profile":
+    patch:
+      security:
+        - bearerAuth: []
+      tags: [User]
+      description: Update user by user id.
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: hossan topu
+                avator:
+                  type: string
+                  example: https/topu.png
+                bio:
+                  type: string
+                  example: this is my bio.
+                designation:
+                  type: string
+                  example: I am a full stack web developer.
+      responses:
+        "200":
+          description: User updated successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: User profile updated successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 64fa38cce9a2d7f123456789
+                          username:
+                            type: string
+                            example: hossan topu
+                          role:
+                            type: string
+                            example: user
+                          profile:
+                            type: object
+                            properties:
+                              bio:
+                                type: string
+                                example: This is topu.
+                              designation:
+                                type: string
+                                example: I am a full stack web developer.
+                              avator:
+                                type: string
+                                example: https/topu.png
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /api/v1/users/64fa38cce9a2d7f123456789
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      security:
+        - bearerAuth: []
+      tags: [User]
+      description: Retrive  published users by id
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "64fa38cce9a2d7f123456789"
+                          username:
+                            type: string
+                            example: hossantopu
+                          email:
+                            type: string
+                            example: hossantopu@gmail.com
+                          role:
+                            type: string
+                            example: user
+                          profile:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 64fa38cce9a2d7f123456789
+                              avator:
+                                type: string
+                                example: https/topu.png
+                              bio:
+                                type: string
+                                example: I am topu
+                              designation:
+                                type: string
+                                example: completed cse degree.
+                      - $ref: "#/components/schemas/Timestamp"
+                  link:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        format: uri
+                        example: "/api/v1/reactions/64fa38cce9a2d7f123456789"
+
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          "$ref": "#/components/responses/500"
+  "/api/v1/users/{id}/role":
+    patch:
+      security:
+        - bearerAuth: []
+      tags: [User]
+      description: Update user role by user id.
+      parameters:
+        - $ref: "#/components/parameters/idPathParam"
+      requestBody:
+        required: true
+        content:
+          "application/json":
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum:
+                    - none
+                    - like
+                    - dislike
+                  example: like
+      responses:
+        "200":
+          description: User role updated successfully.
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  message:
+                    type: string
+                    example: User role updated successfully.
+                  data:
+                    allOf:
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 64fa38cce9a2d7f123456789
+                          username:
+                            type: string
+                            example: hossan topu
+                          email:
+                            type: string
+                            example: hossantopu@gmail.com
+                          role:
+                            type: string
+                            example: user
+                      - $ref: "#/components/schemas/Timestamp"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /api/v1/users/64fa38cce9a2d7f123456789
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Timestamp:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [createdAt, updatedAt]
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          example: 2
+        limit:
+          type: integer
+          format: int32
+          example: 10
+        next:
+          type: integer
+          format: int32
+          example: 3
+        prev:
+          type: integer
+          format: int32
+          example: 1
+        totalPages:
+          type: integer
+          format: int32
+          example: 5
+        totalItems:
+          type: integer
+          format: int32
+          example: 50
+      required:
+        - page
+        - limit
+        - totalPage
+        - totalItems
+  responses:
+    "500":
+      description: "Internal Server Error"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 500
+              error:
+                type: string
+                example: Internal Server Error
+              message:
+                type: string
+                example: We are sorry for the inconvenience. Please try again later
+    "400":
+      description: "Bad Request"
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 400
+              error:
+                type: string
+                example: Bad Request
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: field name
+                    message:
+                      type: string
+                      example: Invalid field
+                    in:
+                      type: string
+                      enum: [query, body]
+                      example: body
+    "401":
+      description: Unauthorized
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 401
+              error:
+                type: string
+                example: Unauthorized
+              message:
+                type: string
+                example: You don't have the right permissions
+    "404":
+      description: Resource Not Found
+      content:
+        "application/json":
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 404
+              error:
+                type: string
+                example: Not Found
+              message:
+                type: string
+                example: Requested resource not found
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      description: current page number
+      required: true
+      schema:
+        type: integer
+        format: int32
+        example: 2
+    limitParam:
+      in: query
+      name: limit
+      description: maximum items to be returned
+      required: true
+      schema:
+        type: integer
+        format: int32
+        example: 10
+    sortTypeParam:
+      in: query
+      name: sort_type
+      description: type of sort (asc or dsc)
+      schema:
+        type: string
+        enum: [asc, dsc]
+        example: dsc
+    statusParam:
+      in: query
+      name: status
+      description: filter by status
+      schema:
+        type: string
+        enum: [draft, published]
+        example: draft
+    accessTypeParam:
+      in: query
+      name: accessType
+      description: filter by accessType
+      schema:
+        type: string
+        enum: [free, basic, premium]
+        example: free
+    userStatusParam:
+      in: query
+      name: status
+      description: filter by status
+      schema:
+        type: string
+        enum: [super_admin, admin, manager, user]
+        example: admin
+    sortByParam:
+      in: query
+      name: sort_by
+      description: Sort key
+      schema:
+        type: string
+        example: updatedAt
+    searchParam:
+      in: query
+      name: search
+      description: Filter by title
+      schema:
+        type: string
+        example: T-Shirt
+    categoryIdParam:
+      in: query
+      name: categoryId
+      description: Filter by categoryId
+      schema:
+        type: string
+        example: 8fdjfd88499495498
+    minPriceParam:
+      in: query
+      name: minPrice
+      description: Minimum price filter
+      required: false
+      schema:
+        type: number
+        format: float
+        example: 300
+    idPathParam:
+      in: path
+      name: id
+      required: true
+      description: ID
+      schema:
+        type: string
+    resourceIdPathParam:
+      in: path
+      name: resourceId
+      required: true
+      description: ID
+      schema:
+        type: string
+    userIdParam:
+      in: query
+      name: userId
+      description: Filter by user id
+      schema:
+        type: string
+        example: 8fdjfd88499495498
+    resourceIdParam:
+      in: query
+      name: resourceId
+      description: Filter by resource id
+      schema:
+        type: string
+        example: 8fdjfd88499495498
