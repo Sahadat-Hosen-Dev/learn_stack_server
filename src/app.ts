@@ -2,11 +2,13 @@ import express, { Request, Response, NextFunction } from "express";
 
 import applyMiddleware from "./middleware";
 import { ErrorResponse } from "./types/common";
-import { isCustomError, isError } from "./utils/commonTypeGuards";
-
+import { isCustomError, isError, isZodError } from "./utils/commonTypeGuards";
+import routes from "./routes";
+import { ZodError } from "zod";
 const app = express();
 applyMiddleware(app);
 
+app.use(routes);
 app.get(
   "/api/v1/health",
   (_req: Request, res: Response, next: NextFunction) => {
@@ -28,6 +30,17 @@ app.use(
     res: Response<ErrorResponse>,
     _next: NextFunction,
   ) => {
+    if (isZodError(err)) {
+      return res.status(400).json({
+        code: 400,
+        error: "Bad request",
+        data: err.issues.map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        })),
+      });
+    }
+
     if (isCustomError(err)) {
       const response: ErrorResponse = {
         code: err.code,

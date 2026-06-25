@@ -9,7 +9,7 @@ info:
     email: sahadathosen.dev@gmail.com
 servers:
   - description: Dev
-    url: "http://localhost:4000/api/v1"
+    url: "http://localhost:4000"
 tags:
   - name: Auth
     description: Authentication Endpoints (public)
