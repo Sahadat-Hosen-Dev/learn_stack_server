@@ -1,5 +1,7 @@
+import authValidations from "@src/validations/auth";
 import { Document, Types } from "mongoose";
 import { Type } from "typescript";
+import z from "zod";
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -26,3 +28,10 @@ export interface IProfile extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type RegisterInput = z.infer<typeof authValidations.registerSchema>;
+
+export type RegisterServiceResponse = {
+  user: IUser;
+  plainOtp: string;
+};
