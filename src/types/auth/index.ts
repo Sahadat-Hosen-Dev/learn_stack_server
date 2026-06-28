@@ -35,3 +35,7 @@ export type RegisterServiceResponse = {
   user: IUser;
   plainOtp: string;
 };
+
+export type VerifyRegisterOtpInput = z.infer<
+  typeof authValidations.verifyRegisterOtpSchema
+>;

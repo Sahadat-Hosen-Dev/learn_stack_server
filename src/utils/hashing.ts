@@ -9,4 +9,10 @@ const generateHash = async (
   return bcrypt.hash(payload, salt);
 };
 
-export { generateHash };
+const hashMatched = async (raw: string, hash: string): Promise<boolean> => {
+  const result = await bcrypt.compare(raw, hash);
+
+  return result;
+};
+
+export { generateHash, hashMatched };

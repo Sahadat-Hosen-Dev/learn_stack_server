@@ -1,7 +1,8 @@
 import User from "@src/model/User";
 import { IUser } from "@src/types/auth";
 import error from "@src/utils/error";
-import { string } from "zod";
+import { boolean, string } from "zod";
+import { SortOrder } from "mongoose";
 
 const findUserByEmail = async (credential: string): Promise<IUser | null> => {
   const user = await User.findOne({
@@ -50,11 +51,28 @@ const createUser = async ({
   return user;
 };
 
+const findAllUser = async ({
+  credential,
+  isVerified,
+  sortValue,
+}: {
+  credential: string;
+  isVerified: boolean;
+  sortValue: SortOrder;
+}): Promise<IUser[]> => {
+  const user: IUser[] = await User.find({ credential, isVerified }).sort({
+    createdAt: sortValue,
+  });
+
+  return user;
+};
+
 const userService = {
   userExit,
   findUserByEmail,
   unverifiedAttemps,
   createUser,
+  findAllUser,
 };
 
 export default userService;
