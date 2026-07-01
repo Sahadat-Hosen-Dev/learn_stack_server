@@ -15,5 +15,10 @@ router.post(
   validate(authValidations.verifyRegisterOtpSchema),
   authControllers.verifyRegisterOtp,
 );
+router.post(
+  "/login",
+  validate(authValidations.loginSchema),
+  authControllers.login,
+);
 
 export default router;

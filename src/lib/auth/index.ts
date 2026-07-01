@@ -3,6 +3,7 @@ import {
   RegisterInput,
   RegisterServiceResponse,
   VerifyRegisterOtpInput,
+  LoginInput,
 } from "@src/types/auth";
 import userService from "../user";
 import error from "@src/utils/error";
@@ -11,6 +12,8 @@ import generateOtp from "@src/utils/generateOtp";
 import { MutateResponse } from "@src/types/common";
 import User from "@src/model/User";
 import { differenceInMinutes } from "date-fns";
+import { AuthPayload } from "@src/types/token";
+import tokenService from "../token";
 
 const register = async ({
   username,
@@ -51,7 +54,7 @@ const register = async ({
 const verifyRegisterOtp = async ({
   credential,
   otp,
-}: VerifyRegisterOtpInput): Promise<MutateResponse> => {
+}: VerifyRegisterOtpInput): Promise<string> => {
   if (!credential || !otp) {
     throw error(400, "Invalid parameters", "Must be provide valid parameters");
   }
@@ -99,21 +102,57 @@ const verifyRegisterOtp = async ({
   user.otp = "";
   await user.save({ validateModifiedOnly: true });
 
-  const response = {
-    code: 200,
-    message: "Email verified successfully. Please log in!",
-    links: {
-      self: `/api/v1/auth/verifyRegisterOtp`,
-      login: "/api/v1/auth/login",
-    },
+  const payload: AuthPayload = {
+    _id: user._id,
+    username: user.username,
+    credential: user.credential,
+    role: user.role,
+    accessType: user.accessType,
   };
 
-  return response;
+  const access_token: string = tokenService.generateToken<AuthPayload>({
+    payload,
+  });
+
+  return access_token;
+};
+
+const login = async ({ credential, password }: LoginInput) => {
+  if (!credential || !password) {
+    throw error(404, "Bad Request", "Invalid credential or password");
+  }
+
+  const user = await userService.findUserByEmail(credential);
+
+  if (!user) {
+    throw error(401, "Unauthorized", "Invalid credential");
+  }
+
+  const isMatchPassword = await hashMatched(password, user.password);
+
+  if (!isMatchPassword) {
+    throw error(400, "Not Found", "Invalid credential");
+  }
+
+  const payload: AuthPayload = {
+    _id: user._id,
+    username: user.username,
+    credential: user.credential,
+    role: user.role,
+    accessType: user.accessType,
+  };
+
+  const access_token: string = tokenService.generateToken<AuthPayload>({
+    payload,
+  });
+
+  return access_token;
 };
 
 const authService = {
   register,
   verifyRegisterOtp,
+  login,
 };
 
 export default authService;

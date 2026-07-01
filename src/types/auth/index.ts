@@ -39,3 +39,5 @@ export type RegisterServiceResponse = {
 export type VerifyRegisterOtpInput = z.infer<
   typeof authValidations.verifyRegisterOtpSchema
 >;
+
+export type LoginInput = z.infer<typeof authValidations.loginSchema>;

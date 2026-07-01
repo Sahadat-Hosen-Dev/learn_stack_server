@@ -11,10 +11,22 @@ const verifyRegisterOtp = async (
   const { credential, otp } = req.body;
   console.log(credential, otp);
   try {
-    const response: MutateResponse = await authService.verifyRegisterOtp({
+    const access_token: string = await authService.verifyRegisterOtp({
       credential,
       otp,
     });
+
+    const response: MutateResponse = {
+      code: 200,
+      message: "Email verified successfully. You are now login!",
+      data: {
+        access_token,
+      },
+      links: {
+        self: `/api/v1/auth/verifyRegisterOtp`,
+        login: "/api/v1/auth/login",
+      },
+    };
 
     res.status(200).json(response);
   } catch (err) {
