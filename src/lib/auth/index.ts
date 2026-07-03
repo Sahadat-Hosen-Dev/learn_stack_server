@@ -4,12 +4,14 @@ import {
   RegisterServiceResponse,
   VerifyRegisterOtpInput,
   LoginInput,
+  ForgetPasswordInput,
+  VerifyResetPasswordInput,
+  ResetPasswordInput,
 } from "@src/types/auth";
 import userService from "../user";
 import error from "@src/utils/error";
 import { generateHash, hashMatched } from "@src/utils/hashing";
 import generateOtp from "@src/utils/generateOtp";
-import { MutateResponse } from "@src/types/common";
 import User from "@src/model/User";
 import { differenceInMinutes } from "date-fns";
 import { AuthPayload } from "@src/types/token";
@@ -149,10 +151,87 @@ const login = async ({ credential, password }: LoginInput) => {
   return access_token;
 };
 
+const forgetPassword = async ({
+  credential,
+}: ForgetPasswordInput): Promise<string> => {
+  const user = await userService.findUserByEmail(credential);
+
+  if (!user) {
+    throw error(404, "Not Found", "Invalid credentials");
+  }
+
+  const { hashedOtp, plainOtp } = await generateOtp();
+
+  user.otp = hashedOtp;
+  user.expiryOtp = new Date(Date.now() + 2 * 60 * 1000);
+
+  await user.save();
+  return plainOtp;
+};
+
+const verifyResetOtp = async ({
+  credential,
+  otp,
+}: VerifyResetPasswordInput): Promise<void> => {
+  const user = await userService.findUserByEmail(credential);
+
+  if (!user) {
+    throw error(404, "Not Found", "User not found");
+  }
+
+  const isOtpValid = await hashMatched(otp, user.otp);
+
+  if (!isOtpValid) {
+    throw error(400, "Invalid OTP", "The OTP you entered is incorrect");
+  }
+
+  if (!user.expiryOtp) {
+    throw error(400, "Invalid Data", "OTP expiry timestamp missing");
+  }
+
+  const minutesPassed = differenceInMinutes(new Date(), user.expiryOtp);
+
+  if (minutesPassed >= 2) {
+    throw error(400, "OTP Expired", "the OTP has expired");
+  }
+
+  user.otp = "";
+  user.resetPasswordRequested = true;
+  await user.save();
+  return;
+};
+
+const resetPassword = async ({
+  credential,
+  newPassword,
+}: ResetPasswordInput): Promise<void> => {
+  const user = await userService.findUserByEmail(credential);
+
+  if (!user) {
+    throw error(401, "Unauthorized", "Not permitted to reset password");
+  }
+
+  if (user.resetPasswordRequested !== true) {
+    throw error(401, "Unauthorized", "Not permitted to reset password");
+  }
+
+  const hashedNewPass = await generateHash(newPassword);
+
+  user.password = hashedNewPass;
+  user.resetPasswordRequested = false;
+
+  await user.save();
+
+  return;
+};
+
 const authService = {
   register,
   verifyRegisterOtp,
   login,
+  forgetPassword,
+  verifyResetOtp,
+  resetPassword,
 };
 
 export default authService;

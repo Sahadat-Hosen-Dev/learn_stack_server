@@ -33,10 +33,41 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters").trim(),
 });
 
+const forgetPasswordSchema = z.object({
+  credential: z
+    .email("Invalid email format")
+    .trim()
+    .transform((val) => val.toLowerCase()),
+});
+
+const verifyResetOtpSchema = z.object({
+  credential: z
+    .email("Invalid email format")
+    .trim()
+    .transform((val) => val.toLowerCase()),
+
+  otp: z.string().min(6, "OTP must be at least 6 characters"),
+});
+
+const resetPasswordSchema = z.object({
+  credential: z
+    .email("Invalid email format")
+    .trim()
+    .transform((val) => val.toLowerCase()),
+
+  newPassword: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .trim(),
+});
+
 const authValidations = {
   registerSchema,
   verifyRegisterOtpSchema,
   loginSchema,
+  forgetPasswordSchema,
+  verifyResetOtpSchema,
+  resetPasswordSchema,
 };
 
 export default authValidations;

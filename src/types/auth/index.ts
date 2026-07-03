@@ -40,4 +40,16 @@ export type VerifyRegisterOtpInput = z.infer<
   typeof authValidations.verifyRegisterOtpSchema
 >;
 
+export type ForgetPasswordInput = z.infer<
+  typeof authValidations.forgetPasswordSchema
+>;
+
+export type VerifyResetPasswordInput = z.infer<
+  typeof authValidations.verifyResetOtpSchema
+>;
+
+export type ResetPasswordInput = z.infer<
+  typeof authValidations.resetPasswordSchema
+>;
+
 export type LoginInput = z.infer<typeof authValidations.loginSchema>;

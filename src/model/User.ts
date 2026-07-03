@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser>(
     },
     expiryOtp: {
       type: Date,
-      default: () => new Date(Date.now() + 2 * 60 * 1000),
+      default: null,
     },
     resetPasswordRequested: {
       type: Boolean,

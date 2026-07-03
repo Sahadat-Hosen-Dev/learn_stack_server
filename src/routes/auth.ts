@@ -20,5 +20,20 @@ router.post(
   validate(authValidations.loginSchema),
   authControllers.login,
 );
+router.post(
+  "/forgetPassword",
+  validate(authValidations.forgetPasswordSchema),
+  authControllers.forgetPassword,
+);
+router.post(
+  "/verifyResetOtp",
+  validate(authValidations.verifyResetOtpSchema),
+  authControllers.verifyRestOtp,
+);
+router.post(
+  "/resetPassword",
+  validate(authValidations.resetPasswordSchema),
+  authControllers.resetPassword,
+);
 
 export default router;
