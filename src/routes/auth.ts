@@ -36,4 +36,10 @@ router.post(
   authControllers.resetPassword,
 );
 
+router.post(
+  "/resendOtp",
+  validate(authValidations.resendOtpSchema),
+  authControllers.resendOtp,
+);
+
 export default router;

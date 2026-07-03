@@ -52,4 +52,6 @@ export type ResetPasswordInput = z.infer<
   typeof authValidations.resetPasswordSchema
 >;
 
+export type ResendOtpInput = z.infer<typeof authValidations.resendOtpSchema>;
+
 export type LoginInput = z.infer<typeof authValidations.loginSchema>;

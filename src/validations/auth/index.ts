@@ -61,6 +61,13 @@ const resetPasswordSchema = z.object({
     .trim(),
 });
 
+const resendOtpSchema = z.object({
+  credential: z
+    .email("Invalid email format")
+    .trim()
+    .transform((val) => val.toLowerCase()),
+});
+
 const authValidations = {
   registerSchema,
   verifyRegisterOtpSchema,
@@ -68,6 +75,7 @@ const authValidations = {
   forgetPasswordSchema,
   verifyResetOtpSchema,
   resetPasswordSchema,
+  resendOtpSchema,
 };
 
 export default authValidations;

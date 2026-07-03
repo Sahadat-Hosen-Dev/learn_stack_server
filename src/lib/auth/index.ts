@@ -7,6 +7,7 @@ import {
   ForgetPasswordInput,
   VerifyResetPasswordInput,
   ResetPasswordInput,
+  ResendOtpInput,
 } from "@src/types/auth";
 import userService from "../user";
 import error from "@src/utils/error";
@@ -225,6 +226,41 @@ const resetPassword = async ({
   return;
 };
 
+const resendOtp = async ({ credential }: ResendOtpInput): Promise<string> => {
+  const existingUser: IUser[] = await userService.findAllUser({
+    credential,
+    isVerified: false || true,
+    sortValue: -1,
+  });
+
+  if (existingUser.length === 0) {
+    throw error(404, "Not Found", "User not found");
+  }
+
+  let user: IUser | null = null;
+
+  user = existingUser[0];
+
+  const minutesPassed = differenceInMinutes(new Date(), user.expiryOtp);
+
+  if (minutesPassed <= 2) {
+    throw error(
+      400,
+      "Current OTP is still valid",
+      "Please wait 2 minutes to resend new OTP",
+    );
+  }
+
+  const { hashedOtp, plainOtp } = await generateOtp();
+
+  user.otp = hashedOtp;
+  user.expiryOtp = new Date(Date.now() + 30 * 60 * 1000);
+
+  user.save();
+
+  return plainOtp;
+};
+
 const authService = {
   register,
   verifyRegisterOtp,
@@ -232,6 +268,7 @@ const authService = {
   forgetPassword,
   verifyResetOtp,
   resetPassword,
+  resendOtp,
 };
 
 export default authService;
